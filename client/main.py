@@ -12,17 +12,3 @@ def get_processes():
     return process_list
 
 
-IP = '127.0.0.1'
-PORT = 4000
-
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect((IP, PORT))
-
-process_list = get_processes()
-
-data = jsonpickle.dumps(process_list)
-client.sendall(data)
-
-response = client.recv(1024)
-print(f"Ответ от сервера: {response.decode('utf-8')}")
-client.close()
