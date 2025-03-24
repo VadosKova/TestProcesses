@@ -25,3 +25,10 @@ def process_client(client):
         print("Error")
     finally:
         client.close()
+
+while True:
+    client, addr = server.accept()
+    print(f"Подключение от {addr}")
+    process_client(client)
+
+server.close()
