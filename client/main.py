@@ -7,8 +7,8 @@ def get_processes():
     for proc in psutil.process_iter(['pid', 'name', 'status']):
         try:
             process_list.append({'pid': proc.info['pid'], 'name': proc.info['name'], 'status': proc.info['status']})
-        except Exception:
-            pass
+        except:
+            continue
     return process_list
 
 
@@ -20,9 +20,15 @@ client.connect((IP, PORT))
 
 process_list = get_processes()
 
-data = jsonpickle.dumps(process_list)
-client.sendall(data)
+try:
+    data = jsonpickle.encode(process_list)
+    client.sendall(data.encode('utf-8'))
+    print(f"Result: {len(process_list)} processes")
 
-response = client.recv(1024)
-print(f"Ответ от сервера: {response.decode('utf-8')}")
-client.close()
+    response = client.recv(1024).decode('utf-8')
+    print("Ответ сервера:", response)
+
+except Exception:
+    print("Error")
+finally:
+    client.close()
