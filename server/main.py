@@ -9,26 +9,23 @@ server.bind((IP, PORT))
 server.listen(2)
 print("Сервер запущен...")
 
+try:
+    while True:
+        conn, addr = server.accept()
+        try:
+            data = conn.recv(1000000).decode('utf-8')
+            processes = jsonpickle.decode(data)
 
-def process_client(client):
-    try:
-        data = client.recv(1024)
-        if data:
-            processes = jsonpickle.loads(data)
-            print("Result:")
+            print("PID | Name | Status")
             for proc in processes:
-                print(f"PID: {proc['pid']} | Name: {proc['name']} | Status: {proc['status']}")
+                print(f"{proc['pid']} | {proc['name']} | {proc['status']}")
 
-            response = "Data received"
-            client.sendall(response.encode('utf-8'))
-    except Exception:
-        print("Error")
-    finally:
-        client.close()
-
-while True:
-    client, addr = server.accept()
-    print(f"Подключение от {addr}")
-    process_client(client)
-
-server.close()
+            conn.send("OK".encode('utf-8'))
+        except Exception:
+            print("Error")
+        finally:
+            conn.close()
+except KeyboardInterrupt:
+    print("Server stopped")
+finally:
+    server.close()
